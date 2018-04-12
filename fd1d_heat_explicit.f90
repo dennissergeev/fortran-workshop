@@ -142,7 +142,7 @@ contains
     real (kind=DP), dimension(:), intent (out) :: h_new
 
     integer :: j
-    real (kind=DP) :: f(size(x))
+    real (kind=DP) :: f(size(x, 1))
     integer :: xn
 
     xn = size(x, 1)
@@ -167,8 +167,8 @@ contains
 
     implicit none
 
-    integer :: T_NUM
-    integer :: X_NUM
+    integer       , intent (in) :: T_NUM
+    integer       , intent (in) :: X_NUM
     real (kind=DP), intent (in) :: k
     real (kind=DP), intent (in) :: t_max
     real (kind=DP), intent (in) :: t_min
