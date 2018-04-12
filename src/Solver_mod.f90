@@ -1,5 +1,6 @@
 module Solver_mod
   use types_mod, only: DP
+  use rhs_mod, only: func
 
   implicit none
 
@@ -37,7 +38,7 @@ contains
 
 ! set the boundary conditions again
     h_new(1) = 90.0e+00_DP
-    h_new(X_NUM) = 70.0e+00_DP
+    h_new(xn) = 70.0e+00_DP
   end subroutine
 
 end module Solver_mod

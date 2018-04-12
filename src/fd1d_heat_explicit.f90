@@ -1,9 +1,8 @@
 program fd1d_heat_explicit_prb
   use types_mod, only: DP
-  use rhs_mod, only: func
   use cfl_mod, only: fd1d_heat_explicit_cfl
   use io_mod, only: r8vec_linspace, r8mat_write, r8vec_write
-  use solver_mod, only, fd1d_heat_explicit
+  use solver_mod, only: fd1d_heat_explicit
 
   implicit none
 
