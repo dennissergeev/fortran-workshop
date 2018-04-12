@@ -1,5 +1,9 @@
 program fd1d_heat_explicit_prb
-  use :: types_mod, only: DP
+  use types_mod, only: DP
+  use rhs_mod, only: func
+  use cfl_mod, only: fd1d_heat_explicit_cfl
+  use io_mod, only: r8vec_linspace, r8mat_write, r8vec_write
+  use solver_mod, only, fd1d_heat_explicit
 
   implicit none
 
@@ -55,17 +59,17 @@ program fd1d_heat_explicit_prb
   write (*, '(a)') '  Run a simple test case.'
 
 ! heat coefficient
-  k = 0.002e+00_dp
+  k = 0.002e+00_DP
 
 ! the x-range values
-  x_min = 0.0e+00_dp
-  x_max = 1.0e+00_dp
+  x_min = 0.0e+00_DP
+  x_max = 1.0e+00_DP
 ! X_NUM is the number of intervals in the x-direction
   call r8vec_linspace(x_min, x_max, x)
 
 ! the t-range values. integrate from t_min to t_max
-  t_min = 0.0e+00_dp
-  t_max = 80.0e+00_dp
+  t_min = 0.0e+00_DP
+  t_max = 80.0e+00_DP
 
 ! T_NUM is the number of intervals in the t-direction
   dt = (t_max-t_min)/real(T_NUM-1, kind=DP)
@@ -75,7 +79,7 @@ program fd1d_heat_explicit_prb
   call fd1d_heat_explicit_cfl(k, T_NUM, t_min, t_max, X_NUM, x_min, x_max, &
     cfl)
 
-  if (0.5e+00_dp<=cfl) then
+  if (0.5e+00_DP<=cfl) then
     write (*, '(a)') ' '
     write (*, '(a)') 'FD1D_HEAT_EXPLICIT_CFL - Fatal error!'
     write (*, '(a)') '  CFL condition failed.'
@@ -85,12 +89,12 @@ program fd1d_heat_explicit_prb
 
 ! set the initial condition
   do j = 1, X_NUM
-    h(j) = 50.0e+00_dp
+    h(j) = 50.0e+00_DP
   end do
 
 ! set the bounday condition
-  h(1) = 90.0e+00_dp
-  h(X_NUM) = 70.0e+00_dp
+  h(1) = 90.0e+00_DP
+  h(X_NUM) = 70.0e+00_DP
 
 ! initialise the matrix to the initial condition
   do i = 1, X_NUM
@@ -119,137 +123,4 @@ program fd1d_heat_explicit_prb
   deallocate(t    )
   deallocate(x    )
 
-contains
-
-  function func() result (d)
-    implicit none
-
-    ! integer :: j
-    ! real (kind=DP), dimension(:) :: x
-    real (kind=DP) :: d
-
-    d = 0.0e+00_dp
-  end function
-
-  subroutine fd1d_heat_explicit(x, dt, cfl, h, h_new)
-    implicit none
-
-    real (kind=DP), intent (in) :: cfl
-    real (kind=DP), intent (in) :: dt
-    ! real (kind=DP), intent (in) :: t
-    real (kind=DP), dimension(:), intent (in)  :: h
-    real (kind=DP), dimension(:), intent (in)  :: x
-    real (kind=DP), dimension(:), intent (out) :: h_new
-
-    integer :: j
-    real (kind=DP) :: f(size(x, 1))
-    integer :: xn
-
-    xn = size(x, 1)
-
-    do j = 1, xn
-      f(j) = func()
-    end do
-
-    h_new(1) = 0.0e+00_dp
-
-    do j = 2, xn - 1
-      h_new(j) = h(j) + dt*f(j) + cfl*(h(j-1)-2.0e+00_dp*h(j)+h(j+1))
-    end do
-
-! set the boundary conditions again
-    h_new(1) = 90.0e+00_dp
-    h_new(X_NUM) = 70.0e+00_dp
-  end subroutine
-
-  subroutine fd1d_heat_explicit_cfl(k, T_NUM, t_min, t_max, X_NUM, x_min, &
-    x_max, cfl)
-
-    implicit none
-
-    integer       , intent (in) :: T_NUM
-    integer       , intent (in) :: X_NUM
-    real (kind=DP), intent (in) :: k
-    real (kind=DP), intent (in) :: t_max
-    real (kind=DP), intent (in) :: t_min
-    real (kind=DP), intent (in) :: x_max
-    real (kind=DP), intent (in) :: x_min
-    real (kind=DP), intent (out) :: cfl
-    real (kind=DP) :: dx
-    real (kind=DP) :: dt
-
-    dx = (x_max-x_min)/real(X_NUM-1, kind=DP)
-    dt = (t_max-t_min)/real(T_NUM-1, kind=DP)
-
-    cfl = k*dt/dx/dx
-
-    write (*, '(a)') ' '
-    write (*, '(a,g14.6)') '  CFL stability criterion value = ', cfl
-
-  end subroutine
-
-  subroutine r8mat_write(output_filename, table)
-    implicit none
-
-    character (len=*), intent(in) :: output_filename
-    real (kind=DP)   , dimension(:, :), intent(in) :: table
-    integer :: m
-    integer :: n
-    integer :: j
-    integer :: output_unit_id
-    character (len=30) :: string
-
-    m = size(table, 1)
-    n = size(table, 2)
-
-    output_unit_id = 10
-    open (unit=output_unit_id, file=output_filename, status='replace')
-
-    write (string, '(a1,i8,a1,i8,a1,i8,a1)') '(', m, 'g', 24, '.', 16, ')'
-
-    do j = 1, n
-      write (output_unit_id, string) table(1:m, j)
-    end do
-
-    close (unit=output_unit_id)
-  end subroutine
-
-  subroutine r8vec_linspace(a_first, a_last, a)
-
-    implicit none
-
-    real (kind=DP), intent(in)  :: a_first
-    real (kind=DP), intent(in)  :: a_last
-    real (kind=DP), dimension(:), intent(out) :: a
-    integer :: i
-    integer :: n
-
-    n = size(a, 1)
-
-    do i = 1, n
-      a(i) = (real(n-i,kind=DP)*a_first+real(i-1,kind=DP)*a_last)/ &
-        real(n-1, kind=DP)
-    end do
-
-  end subroutine
-
-  subroutine r8vec_write(output_filename, x)
-
-    implicit none
-
-    character (len=*), intent(in) :: output_filename
-    real (kind=DP)   , dimension(:), intent(in) :: x
-    integer :: output_unit_id
-    integer :: j
-
-    output_unit_id = 11
-    open (unit=output_unit_id, file=output_filename, status='replace')
-
-    do j = 1, size(x, 1)
-      write (output_unit_id, '(2x,g24.16)') x(j)
-    end do
-
-    close (unit=output_unit_id)
-  end subroutine
-
-end program
+end program fd1d_heat_explicit_prb
