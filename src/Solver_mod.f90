@@ -33,6 +33,9 @@ contains
     h_new(1) = 0.0e+00_DP
 
     do j = 2, xn - 1
+      ! CamFort checks
+      != stencil readOnce, (reflexive(dim=1)) :: f
+      != stencil (centered(depth=1, dim=1)) :: h 
       h_new(j) = h(j) + dt*f(j) + cfl*(h(j-1)-2.0e+00_DP*h(j)+h(j+1))
     end do
 
