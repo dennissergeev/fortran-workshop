@@ -1,13 +1,17 @@
+!> Denis Sergeev, UEA
+!> Solves the one dimensional heat diffusion equation
+!> \( \frac{\partial H}{\partial t}
+!> - \kappa\frac{\partial^{2} H}{\partial x^{2}} = f(x) \)
 program fd1d_heat_explicit_prb
-  use types_mod, only: DP
+  use types_mod, only: DP, SI
   use cfl_mod, only: fd1d_heat_explicit_cfl
   use io_mod, only: r8vec_linspace, r8mat_write, r8vec_write
   use solver_mod, only: fd1d_heat_explicit
 
   implicit none
 
-  integer, parameter :: T_NUM = 201
-  integer, parameter :: X_NUM = 21
+  integer(kind=SI), parameter :: T_NUM = 201
+  integer(kind=SI), parameter :: X_NUM = 21
 
   real (kind=DP)                  :: cfl
   real (kind=DP)                  :: dt
@@ -16,8 +20,8 @@ program fd1d_heat_explicit_prb
 ! the "matrix" stores all x-values for all t-values
 ! remember Fortran is column major, meaning that rows are contiguous
   real (kind=DP), allocatable, dimension(:, :) :: hmat
-  integer                         :: i
-  integer                         :: j
+  integer(kind=SI)                         :: i
+  integer(kind=SI)                         :: j
   real (kind=DP)                  :: k
 
   real (kind=DP), allocatable, dimension(:)    :: t
@@ -26,7 +30,7 @@ program fd1d_heat_explicit_prb
   real (kind=DP), allocatable, dimension(:)    :: x
   real (kind=DP)                  :: x_max
   real (kind=DP)                  :: x_min
-  integer                         :: ierr 
+  integer(kind=SI)                         :: ierr 
 
 
   allocate(h    (1:X_NUM         ), stat=ierr)

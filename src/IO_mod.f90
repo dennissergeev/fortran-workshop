@@ -1,5 +1,5 @@
 module IO_mod
-  use types_mod, only: DP
+  use types_mod, only: DP, SI
 
   implicit none
 
@@ -16,10 +16,10 @@ contains
 
     character (len=*), intent(in) :: output_filename
     real (kind=DP)   , dimension(:, :), intent(in) :: table
-    integer :: m
-    integer :: n
-    integer :: j
-    integer :: output_unit_id
+    integer(kind=SI) :: m
+    integer(kind=SI) :: n
+    integer(kind=SI) :: j
+    integer(kind=SI) :: output_unit_id
     character (len=30) :: string
 
     m = size(table, 1)
@@ -44,8 +44,8 @@ contains
     real (kind=DP), intent(in)  :: a_first
     real (kind=DP), intent(in)  :: a_last
     real (kind=DP), dimension(:), intent(out) :: a
-    integer :: i
-    integer :: n
+    integer(kind=SI) :: i
+    integer(kind=SI) :: n
 
     n = size(a, 1)
 
@@ -62,8 +62,8 @@ contains
 
     character (len=*), intent(in) :: output_filename
     real (kind=DP)   , dimension(:), intent(in) :: x
-    integer :: output_unit_id
-    integer :: j
+    integer(kind=SI) :: output_unit_id
+    integer(kind=SI) :: j
 
     output_unit_id = 11
     open (unit=output_unit_id, file=output_filename, status='replace')

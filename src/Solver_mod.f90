@@ -1,5 +1,5 @@
 module Solver_mod
-  use types_mod, only: DP
+  use types_mod, only: DP, SI
   use rhs_mod, only: func
 
   implicit none
@@ -20,9 +20,9 @@ contains
     real (kind=DP), dimension(:), intent (in)  :: x
     real (kind=DP), dimension(:), intent (out) :: h_new
 
-    integer :: j
+    integer(kind=SI) :: j
     real (kind=DP) :: f(size(x, 1))
-    integer :: xn
+    integer(kind=SI) :: xn
 
     xn = size(x, 1)
 

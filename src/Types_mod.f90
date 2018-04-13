@@ -12,7 +12,4 @@ module Types_mod
   integer, parameter :: SI = INT32
   integer, parameter :: DI = INT64
 
-contains
-
-
 end module Types_mod
