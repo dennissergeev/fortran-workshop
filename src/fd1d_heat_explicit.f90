@@ -5,7 +5,7 @@
 program fd1d_heat_explicit_prb
   use types_mod, only: DP, SI
   use cfl_mod, only: fd1d_heat_explicit_cfl
-  use io_mod, only: r8vec_linspace, r8mat_write, r8vec_write
+  use io_mod, only: r8vec_linspace, r8mat_write !, r8vec_write
   use solver_mod, only: fd1d_heat_explicit
 
   implicit none
@@ -116,9 +116,7 @@ program fd1d_heat_explicit_prb
   end do
 
 ! write data to files
-  call r8mat_write('h_test01.txt', hmat)
-  call r8vec_write('t_test01.txt', t)
-  call r8vec_write('x_test01.txt', x)
+  call r8mat_write('h_test01.nc', t, x, hmat)
 
   deallocate(h    )
   deallocate(h_new)

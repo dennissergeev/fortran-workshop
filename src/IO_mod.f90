@@ -21,9 +21,6 @@ contains
     real (kind=DP)   , dimension(:, :), intent(in) :: table
     integer(kind=SI) :: nx
     integer(kind=SI) :: nt
-    integer(kind=SI) :: j
-    integer(kind=SI) :: output_unit_id
-    character (len=30) :: string
     integer(kind=SI) :: ierr
     integer(kind=SI) :: ncid
     integer(kind=SI) :: t_dimid
@@ -42,12 +39,12 @@ contains
     ierr = NF90_DEF_DIM( ncid, "x", nx, x_dimid )
     ierr = NF90_DEF_DIM( ncid, "t", nt, t_dimid )
 
-    ierr = NF90_DEF_VAR( ncid, "x", NF90_FLOAT, x_dimid, x_id )
+    ierr = NF90_DEF_VAR( ncid, "x-range", NF90_FLOAT, x_dimid, x_id )
     ierr = NF90_PUT_ATT( ncid, x_id, "units", "metres" )
-    ierr = NF90_DEF_VAR( ncid, "t", NF90_FLOAT, t_dimid, t_id )
+    ierr = NF90_DEF_VAR( ncid, "t-range", NF90_FLOAT, t_dimid, t_id )
     ierr = NF90_PUT_ATT( ncid, t_id, "units", "seconds" )
-    ierr = NF90_DEF_VAR( ncid, "table", NF90_FLOAT, [ x_dimid, t_dimid ], varid )
-    ierr = NF90_PUT_ATT( ncid, varid, "units", "degrees Celcius" )
+    ierr = NF90_DEF_VAR( ncid, "solution", NF90_FLOAT, [ x_dimid, t_dimid ], varid )
+    ierr = NF90_PUT_ATT( ncid, varid, "units", "degC" )
 
     ierr = NF90_ENDDEF( ncid )
 
