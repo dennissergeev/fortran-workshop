@@ -3,6 +3,9 @@
 !> \( \frac{\partial H}{\partial t}
 !> - \kappa\frac{\partial^{2} H}{\partial x^{2}} = f(x) \)
 program fd1d_heat_explicit_prb
+  ! use plplot
+  use plfortrandemolib
+
   use types_mod, only: DP, SI
   use cfl_mod, only: fd1d_heat_explicit_cfl
   use io_mod, only: r8vec_linspace, r8mat_write !, r8vec_write
@@ -31,6 +34,7 @@ program fd1d_heat_explicit_prb
   real (kind=DP)                  :: x_max
   real (kind=DP)                  :: x_min
   integer(kind=SI)                         :: ierr 
+  character (len=12) :: imgname
 
 
   allocate(h    (1:X_NUM         ), stat=ierr)
@@ -113,6 +117,20 @@ program fd1d_heat_explicit_prb
       hmat(i, j) = h_new(i)
       h(i) = h_new(i)
     end do
+    ! Plotting
+    if (mod( j, 10) == 0) then
+      write( imgname, '(A,I3.3,A)' ) 'image', j, '.png' 
+      print*, imgname
+
+      call PLSFNAM( imgname )
+      call PLSDEV( 'pngcairo' )
+      call PLINIT( )
+      call PLENV( minval(x(:)), maxval(x(:)), minval(h(:)), maxval(h(:)), 0, 0 )
+      call PLLAB( 'x-axis', 'y-axis', 'mytitle' )
+      call PLLINE( x(:), h_new(:) )
+      call PLEND( )
+    end if
+
   end do
 
 ! write data to files

@@ -5,15 +5,17 @@ TEST_EXE = tests.exe
 NC_DIR = /usr/local/netcdf-4.6.1
 NC_INC = -I${NC_DIR}/include
 NC_LIB = -L${NC_DIR}/lib -lnetcdff -lnetcdf
+PL_INC = -I/usr/local/plplot-5.13.0/lib/fortran/modules/plplot
+PL_LIB = -L/usr/local/plplot-5.13.0/lib -lplplotfortran -lplplot
 
 run: ${EXE}
 	./${EXE}
 
 ${EXE}: fd1d_heat_explicit.o libfmw.a
-	${FORTRAN} $^ -L. -lfmw ${NC_LIB} -o $@
+	${FORTRAN} $^ -L. -lfmw ${NC_LIB} ${PL_LIB} -o $@
 
 fd1d_heat_explicit.o : fd1d_heat_explicit.f90 libfmw.a 
-	${FORTRAN} -c ${NC_INC} -I. $< -o $@
+	${FORTRAN} -c ${NC_INC} ${PL_INC} -I. $< -o $@
 
 libfmw.a: CFL_mod.o IO_mod.o RHS_mod.o Solver_mod.o Types_mod.o
 	ar rcs $@ $^ 
