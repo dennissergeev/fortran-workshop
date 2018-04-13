@@ -1,0 +1,26 @@
+!> test the hell out of it
+@test
+subroutine testCFL( )
+  use pFUnit_mod
+  use CFL_mod
+  use Types_mod
+
+  integer, parameter :: T_NUM = 201
+  integer, parameter :: X_NUM = 21
+  real(KIND=DP) :: k, x_min, x_max, t_min, t_max
+  real(KIND=DP) :: cfl, cfl_exact, tol
+
+  tol = 0.00000001_DP
+  cfl_exact = 0.32_DP
+  k = 0.002_DP
+  x_min = 0.0_DP
+  x_max = 1.0_DP
+  t_min = 0.0_DP
+  t_max = 80.0_DP
+  call fd1d_heat_explicit_cfl( k, t_num, t_min, t_max, &
+                               x_num, x_min, x_max, cfl )
+
+  @assertEqual( cfl, cfl_exact, tol )
+
+end subroutine testCFL
+

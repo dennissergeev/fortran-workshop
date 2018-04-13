@@ -1,5 +1,6 @@
 EXE = heat_eq.x
 FORTRAN = nagfor
+TEST_EXE = tests.exe
 
 NC_DIR = /usr/local/netcdf-4.6.1
 NC_INC = -I${NC_DIR}/include
@@ -28,8 +29,19 @@ Solver_mod.o : Solver_mod.f90 RHS_mod.o Types_mod.o
 Types_mod.o : Types_mod.f90 
 	${FORTRAN} -c $< -o $@
 
+test: ${TEST_EXE}
+	./${TEST_EXE}
+${TEST_EXE}: CFL_mod.o testCFL.o
+	${FORTRAN} -I${PFUNIT}/mod ${PFUNIT}/include/driver.F90 $^ -L${PFUNIT}/lib -lpfunit -I. -o $@
+testCFL.o: testCFL.F90
+	${FORTRAN} -I${PFUNIT}/mod -I. -c $<
+testCFL.F90: testCFL.pf testSuites.inc
+	${PFUNIT}/bin/pFUnitParser.py $< $@ -I.
+	
+
 .PHONY: clean
 clean:
 	-rm -f *.o
 	-rm -f *.mod
 	-rm -f ${EXE}
+	-rm -f ${TEST_EXE}
