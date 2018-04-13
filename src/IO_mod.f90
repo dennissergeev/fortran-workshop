@@ -1,4 +1,5 @@
 module IO_mod
+  use netcdf
   use types_mod, only: DP, SI
 
   implicit none
@@ -11,30 +12,51 @@ module IO_mod
 
 contains
 
-  subroutine r8mat_write(output_filename, table)
+  subroutine r8mat_write(output_filename, t, x, table)
     implicit none
 
     character (len=*), intent(in) :: output_filename
+    real(kind=DP), dimension(:), intent(in) :: x
+    real(kind=DP), dimension(:), intent(in) :: t
     real (kind=DP)   , dimension(:, :), intent(in) :: table
-    integer(kind=SI) :: m
-    integer(kind=SI) :: n
+    integer(kind=SI) :: nx
+    integer(kind=SI) :: nt
     integer(kind=SI) :: j
     integer(kind=SI) :: output_unit_id
     character (len=30) :: string
+    integer(kind=SI) :: ierr
+    integer(kind=SI) :: ncid
+    integer(kind=SI) :: t_dimid
+    integer(kind=SI) :: x_dimid
+    integer(kind=SI) :: x_id, t_id, varid
 
-    m = size(table, 1)
-    n = size(table, 2)
+    nx = size(table, 1)
+    nt = size(table, 2)
 
-    output_unit_id = 10
-    open (unit=output_unit_id, file=output_filename, status='replace')
+    ierr = NF90_CREATE( trim(output_filename), NF90_CLOBBER, ncid )
 
-    write (string, '(a1,i8,a1,i8,a1,i8,a1)') '(', m, 'g', 24, '.', 16, ')'
+    ierr = NF90_PUT_ATT( ncid, NF90_GLOBAL, "purpose", "Fortran Workshop" )
+    ierr = NF90_PUT_ATT( ncid, NF90_GLOBAL, "creator", "Denis Sergeev" )
+    ierr = NF90_PUT_ATT( ncid, NF90_GLOBAL, "institution", "University of East Anglia" )
 
-    do j = 1, n
-      write (output_unit_id, string) table(1:m, j)
-    end do
+    ierr = NF90_DEF_DIM( ncid, "x", nx, x_dimid )
+    ierr = NF90_DEF_DIM( ncid, "t", nt, t_dimid )
 
-    close (unit=output_unit_id)
+    ierr = NF90_DEF_VAR( ncid, "x", NF90_FLOAT, x_dimid, x_id )
+    ierr = NF90_PUT_ATT( ncid, x_id, "units", "metres" )
+    ierr = NF90_DEF_VAR( ncid, "t", NF90_FLOAT, t_dimid, t_id )
+    ierr = NF90_PUT_ATT( ncid, t_id, "units", "seconds" )
+    ierr = NF90_DEF_VAR( ncid, "table", NF90_FLOAT, [ x_dimid, t_dimid ], varid )
+    ierr = NF90_PUT_ATT( ncid, varid, "units", "degrees Celcius" )
+
+    ierr = NF90_ENDDEF( ncid )
+
+    ierr = NF90_PUT_VAR( ncid, x_id, x(:) )
+    ierr = NF90_PUT_VAR( ncid, t_id, t(:) )
+    ierr = NF90_PUT_VAR( ncid, varid, table(:, :) )
+
+    ierr = NF90_CLOSE( ncid )
+
   end subroutine
 
 
